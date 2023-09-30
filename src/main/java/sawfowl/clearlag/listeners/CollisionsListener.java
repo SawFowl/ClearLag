@@ -1,7 +1,9 @@
 package sawfowl.clearlag.listeners;
 
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.event.Listener;
@@ -22,14 +24,15 @@ public class CollisionsListener {
 
 	@Listener
 	public void onCollision(CollideEntityEvent event) {
-		Stream<Entity> stream = event.entities().stream().filter(entity -> !entity.type().equals(EntityTypes.PLAYER.get()));
-		if(stream.count() < plugin.getConfig().getCollisionLimit()) return;
-		stream.forEach(this::damage);
-		stream = null;
+		List<Entity> list = event.entities().stream().filter(entity -> !entity.type().equals(EntityTypes.PLAYER.get())).collect(Collectors.toList());
+		if(list.size() < plugin.getConfig().getCollisionLimit()) return;
+		list.forEach(this::damage);
+		list = null;
 	}
 
 	private void damage(Entity entity) {
-		if(!entity.isRemoved()) entity.damage(2, damageSource);
+		if(!entity.isRemoved() && entity.get(Keys.HEALTH).isPresent() ) 
+			entity.damage(entity.get(Keys.HEALTH).get() > 2 ? 2 : entity.get(Keys.HEALTH).get(), damageSource);
 	}
 
 }
