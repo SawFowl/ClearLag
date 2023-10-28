@@ -1,11 +1,11 @@
 plugins {
 	id("java")
 	id("eclipse")
-	id("org.spongepowered.gradle.plugin") version "2.0.2"
+	id("org.spongepowered.gradle.plugin") version "2.1.1"
 }
 
 group = "sawfowl.clearlag"
-version = "${major}.${minor}.${patch}-${api}-${suffix}"
+version = "${major}.${minor}-${api}-${suffix}"
 
 java {
 	sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
@@ -28,13 +28,13 @@ tasks.withType(JavaCompile) {
 }
 
 dependencies {
-	implementation "org.spongepowered:spongeapi:10.0.0"
+	implementation "org.spongepowered:spongeapi:11.0.0-SNAPSHOT"
 	implementation "com.github.SawFowl:LocaleAPI:3.0"
 	implementation 'com.github.SawFowl:CommandPack:2.0'
 }
 
 sponge {
-	apiVersion("10.0.0")
+	apiVersion("11.0.0-SNAPSHOT")
 	loader {
 		name("java_plain")
 		version("1.0")
@@ -51,7 +51,7 @@ sponge {
 		dependency("spongeapi") {
 			optional(false)
 			loadOrder("after")
-			version("10.0.0")
+			version("11.0.0")
 		}
 		dependency("localeapi") {
 			optional(false)
