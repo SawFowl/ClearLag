@@ -1,15 +1,14 @@
 plugins {
 	id("java")
-	id("org.spongepowered.gradle.plugin") version "2.0.2"
 	id("eclipse")
-	id 'com.github.johnrengelman.shadow' version '7.1.2'
+	id("org.spongepowered.gradle.plugin") version "2.0.2"
 }
 
 group = "sawfowl.clearlag"
 version = "${major}.${minor}.${patch}-${api}-${suffix}"
 
 java {
-	sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+	sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 }
 
 repositories {
@@ -29,10 +28,9 @@ tasks.withType(JavaCompile) {
 }
 
 dependencies {
-	implementation "org.spongepowered:spongeapi:8.1.0"
-	implementation "com.github.SawFowl:LocaleAPI:2.6.0"
-	implementation 'com.github.SawFowl:CommandPack:1.4'
-	implementation 'org.spongepowered:spongevanilla:1.16.5-8.0.0-RC1111:universal'
+	implementation "org.spongepowered:spongeapi:10.0.0"
+	implementation "com.github.SawFowl:LocaleAPI:3.0"
+	implementation 'com.github.SawFowl:CommandPack:2.0'
 }
 
 sponge {
@@ -58,12 +56,12 @@ sponge {
 		dependency("localeapi") {
 			optional(false)
 			loadOrder("after")
-			version("2.3.0")
+			version("3.0.0")
 		}
 		dependency("commandpack") {
 			optional(false)
 			loadOrder("after")
-			version("1.4.0")
+			version("2.0.0")
 		}
 	}
 }

@@ -8,14 +8,13 @@ import org.spongepowered.api.command.exception.CommandException;
 import org.spongepowered.api.command.parameter.CommandContext;
 
 import net.kyori.adventure.audience.Audience;
-
+import net.kyori.adventure.text.Component;
 import sawfowl.clearlag.ClearLag;
 import sawfowl.clearlag.Permissions;
 import sawfowl.clearlag.configure.config.locale.LocalePath;
 import sawfowl.clearlag.utils.Placeholders;
 import sawfowl.commandpack.api.commands.parameterized.ParameterSettings;
 import sawfowl.commandpack.api.data.command.Settings;
-import sawfowl.localeapi.api.TextUtils;
 
 public class Clear extends PluginCommand {
 
@@ -26,7 +25,7 @@ public class Clear extends PluginCommand {
 	@Override
 	public void execute(CommandContext context, Audience src, Locale locale, boolean isPlayer) throws CommandException {
 		async(() -> {
-			src.sendMessage(getPrefix(locale).append(TextUtils.replace(getText(locale, LocalePath.REMOVE_ITEMS), Placeholders.SIZE, text(plugin.removeItems()))));
+			src.sendMessage(getPrefix(locale).append(getText(locale, LocalePath.REMOVE_ITEMS).replace(Placeholders.SIZE, plugin.removeItems()).get()));
 		});
 	}
 
@@ -53,6 +52,11 @@ public class Clear extends PluginCommand {
 	@Override
 	public String command() {
 		return "clear";
+	}
+
+	@Override
+	public Component getComponent(Object[] path) {
+		return null;
 	}
 
 }

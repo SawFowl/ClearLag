@@ -13,13 +13,13 @@ import org.spongepowered.api.world.gamerule.GameRules;
 import org.spongepowered.api.world.server.ServerWorld;
 
 import net.kyori.adventure.audience.Audience;
+
 import sawfowl.clearlag.ClearLag;
 import sawfowl.clearlag.Permissions;
 import sawfowl.clearlag.configure.config.locale.LocalePath;
 import sawfowl.clearlag.utils.Placeholders;
 import sawfowl.commandpack.api.commands.parameterized.ParameterSettings;
 import sawfowl.commandpack.api.data.command.Settings;
-import sawfowl.localeapi.api.TextUtils;
 
 public class Halt extends PluginCommand {
 
@@ -31,14 +31,15 @@ public class Halt extends PluginCommand {
 	@Override
 	public void execute(CommandContext context, Audience src, Locale locale, boolean isPlayer) throws CommandException {
 		ServerWorld world = getArgument(context, value).get();
-		boolean halt = world.properties().gameRule(GameRules.DO_MOB_SPAWNING.get()) || world.properties().gameRule(GameRules.DO_FIRE_TICK.get()) || world.properties().gameRule(GameRules.MOB_GRIEFING.get()) || world.properties().gameRule(GameRules.RANDOM_TICK_SPEED.get()) > 0;
+		boolean halt = plugin.getConfig().getPerformance().halt(world);
 		if(halt) {
 			world.properties().setGameRule(GameRules.RANDOM_TICK_SPEED.get(), 0);
 		} else world.properties().setGameRule(GameRules.RANDOM_TICK_SPEED.get(), 3);
 		world.properties().setGameRule(GameRules.DO_MOB_SPAWNING.get(), !halt);
 		world.properties().setGameRule(GameRules.DO_FIRE_TICK.get(), !halt);
 		world.properties().setGameRule(GameRules.MOB_GRIEFING.get(), !halt);
-		src.sendMessage(getPrefix(locale).append(TextUtils.replace(getText(locale, halt ? LocalePath.COMMAND_HALT_ENABLE : LocalePath.COMMAND_HALT_DISABLE), Placeholders.WORLD, world.key().asString())));
+		src.sendMessage(getPrefix(locale).append(getText(locale, halt ? LocalePath.COMMAND_HALT_ENABLE : LocalePath.COMMAND_HALT_DISABLE).replace(Placeholders.WORLD, world.key().asString()).get()));
+		plugin.saveConfig();
 	}
 
 	@Override

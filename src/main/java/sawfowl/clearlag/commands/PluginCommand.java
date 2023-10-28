@@ -34,11 +34,6 @@ public abstract class PluginCommand implements ParameterizedCommand {
 	}
 
 	@Override
-	public Component getText(Object[] path) {
-		return null;
-	}
-
-	@Override
 	public PluginContainer getContainer() {
 		return plugin.getContainer();
 	}
@@ -46,6 +41,11 @@ public abstract class PluginCommand implements ParameterizedCommand {
 	@Override
 	public Map<String, ParameterSettings> getSettingsMap() {
 		return args;
+	}
+
+	@Override
+	public Component getComponent(Object[] path) {
+		return null;
 	}
 
 	public abstract List<ParameterSettings> getArgs();
@@ -59,11 +59,12 @@ public abstract class PluginCommand implements ParameterizedCommand {
 	}
 
 	protected long killMobs(ServerWorld world, EntityCategory category) {
-		List<? extends Entity> list = world.entities().stream().filter(entity -> !entity.type().equals(EntityTypes.PLAYER.get()) && entity.type().category().equals(category) && !entity.get(Keys.CUSTOM_NAME).isPresent()).collect(Collectors.toList());
-		long size = list.stream().count();
+		List<? extends Entity> list = world.entities().stream().filter(entity -> !entity.type().equals(EntityTypes.PLAYER.get()) && (category == null || entity.type().category().equals(category)) && !entity.get(Keys.CUSTOM_NAME).isPresent()).collect(Collectors.toList());
+		long size = list.size();
 		list.forEach(entity -> {
-			entity.offer(Keys.HEALTH, 0d);
-			entity.remove();
+			entity.offer(Keys.HEALTH, 1d);
+			entity.damage(10000, plugin.getDamageSource());
+			//entity.remove();
 		});
 		list.clear();;
 		list = null;
@@ -71,7 +72,7 @@ public abstract class PluginCommand implements ParameterizedCommand {
 	}
 
 	protected Component getPrefix(Locale locale) {
-		return getText(locale, LocalePath.PREFIX);
+		return getComponent(locale, LocalePath.PREFIX);
 	}
 
 }

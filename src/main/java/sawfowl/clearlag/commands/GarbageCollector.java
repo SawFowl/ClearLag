@@ -8,13 +8,13 @@ import org.spongepowered.api.command.exception.CommandException;
 import org.spongepowered.api.command.parameter.CommandContext;
 
 import net.kyori.adventure.audience.Audience;
+
 import sawfowl.clearlag.ClearLag;
 import sawfowl.clearlag.Permissions;
 import sawfowl.clearlag.configure.config.locale.LocalePath;
 import sawfowl.clearlag.utils.Placeholders;
 import sawfowl.commandpack.api.commands.parameterized.ParameterSettings;
 import sawfowl.commandpack.api.data.command.Settings;
-import sawfowl.localeapi.api.TextUtils;
 
 public class GarbageCollector extends PluginCommand {
 
@@ -27,7 +27,7 @@ public class GarbageCollector extends PluginCommand {
 		long free = Runtime.getRuntime().freeMemory() / 1024 / 1024;
 		System.gc();
 		free = (Runtime.getRuntime().freeMemory() / 1024 / 1024) - free;
-		src.sendMessage(getPrefix(locale).append(TextUtils.replace(getText(locale, LocalePath.COMMAND_GARBAGECOLLECTOR), Placeholders.SIZE, text(free))));
+		src.sendMessage(getPrefix(locale).append(getText(locale, LocalePath.COMMAND_GARBAGECOLLECTOR).replace(Placeholders.SIZE, free).get()));
 	}
 
 	@Override

@@ -3,16 +3,17 @@ package sawfowl.clearlag.configure.config.locale;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+
 import sawfowl.clearlag.utils.Placeholders;
 import sawfowl.localeapi.api.ConfigTypes;
 import sawfowl.localeapi.api.LocaleService;
+import sawfowl.localeapi.api.PluginLocale;
+import sawfowl.localeapi.api.Text;
 import sawfowl.localeapi.api.TextUtils;
-import sawfowl.localeapi.utils.AbstractLocaleUtil;
 
 public class Locales {
 
@@ -37,32 +38,28 @@ public class Locales {
 		return localeService.getSystemOrDefaultLocale();
 	}
 
-	public Component getText(Locale locale, Object... path) {
-		return getAbstractLocaleUtil(locale).getComponent(json, path);
+	public Text getText(Locale locale, Object... path) {
+		return getAbstractLocaleUtil(locale).getText(path);
+	}
+
+	public Component getComponent(Locale locale, Object... path) {
+		return getAbstractLocaleUtil(locale).getComponent(path);
 	}
 
 	public List<Component> getListTexts(Locale locale, Object... path) {
-		return getAbstractLocaleUtil(locale).getListComponents(json, path);
+		return getAbstractLocaleUtil(locale).getListComponents(path);
 	}
 
 	public String getString(Locale locale, Object... path) {
-		return TextUtils.serializeLegacy(getText(locale, path));
+		return TextUtils.serializeLegacy(getComponent(locale, path));
 	}
 
 	public String getStringForConsole(Object... path) {
-		return TextUtils.serializeLegacy(getText(getSystemLocale(), path));
-	}
-
-	public Component getTextWithReplaced(Locale locale, Map<String, String> map, Object... path) {
-		return replace(getText(locale, path), map);
-	}
-
-	public Component getTextReplaced(Locale locale, Map<String, Component> map, Object... path) {
-		return replaceComponent(getText(locale, path), map);
+		return getText(getSystemLocale(), path).toPlain();
 	}
 
 	public Component getTextFromDefault(Object... path) {
-		return getAbstractLocaleUtil(org.spongepowered.api.util.locale.Locales.DEFAULT).getComponent(json, path);
+		return getAbstractLocaleUtil(org.spongepowered.api.util.locale.Locales.DEFAULT).getComponent(path);
 	}
 
 	private void generateRu() {
@@ -99,7 +96,7 @@ public class Locales {
 		save = check(locale, toText("&eItems lying on the ground will be removed after &a30&e seconds!"), null, LocalePath.CHANGE_CLEAR_WARN30S);
 		save = check(locale, toText("&3Commands list"), null, LocalePath.COMMAND_HELP_TITLE);
 		save = checkList(locale, Arrays.asList(toText("&2/lagg clear&f - &6remove any items lying on the ground.").clickEvent(ClickEvent.runCommand("/lagg clear")), toText("&2/lagg halt&f - &6enable/disable the halt function in the world.").clickEvent(ClickEvent.runCommand("/lagg halt")), toText("&2/lagg gc&f - &6clear ram.").clickEvent(ClickEvent.runCommand("/lagg gc")), toText("&2/lagg kill&f - &6killing mobs by category.").clickEvent(ClickEvent.runCommand("/lagg kill"))), null, LocalePath.COMMAND_HELP_LIST);
-		save = checkList(locale, Arrays.asList(toText("&2/lagg kill monsters&f - &6kill all hostile mobs").clickEvent(ClickEvent.runCommand("/lagg kill monsters")), toText("&2/lagg kill creature&f - &6kill all the peaceful mobs.").clickEvent(ClickEvent.runCommand("/lagg kill creature")), toText("&2/lagg kill ambient&f - &6kill all the ambient mobs.").clickEvent(ClickEvent.runCommand("/lagg kill ambient")), toText("&2/lagg kill waterсreature&f - &6kill all the peaceful sea mobs.").clickEvent(ClickEvent.runCommand("/lagg kill waterсreature")), toText("&2/lagg kill waterambient&f - &6kill all the ambient sea mobs.").clickEvent(ClickEvent.runCommand("/lagg kill waterambient")), toText("&2/lagg kill misc&f - &6kill all mobs outside of the other categories.").clickEvent(ClickEvent.runCommand("/lagg kill misc")), toText("&2/lagg kill all&f - &6kill all the mobs.").clickEvent(ClickEvent.runCommand("/lagg kill all"))), null, LocalePath.COMMAND_KILL_HELP);
+		save = checkList(locale, Arrays.asList(toText("&2/lagg kill monsters&f - &6kill all hostile mobs").clickEvent(ClickEvent.runCommand("/lagg kill monsters")), toText("&2/lagg kill creature&f - &6kill all the peaceful mobs.").clickEvent(ClickEvent.runCommand("/lagg kill creature")), toText("&2/lagg kill ambient&f - &6kill all the ambient mobs.").clickEvent(ClickEvent.runCommand("/lagg kill ambient")), toText("&2/lagg kill waterсreature&f - &6kill all the peaceful water mobs.").clickEvent(ClickEvent.runCommand("/lagg kill waterсreature")), toText("&2/lagg kill waterambient&f - &6kill all the ambient water mobs.").clickEvent(ClickEvent.runCommand("/lagg kill waterambient")), toText("&2/lagg kill misc&f - &6kill all mobs outside of the other categories.").clickEvent(ClickEvent.runCommand("/lagg kill misc")), toText("&2/lagg kill all&f - &6kill all the mobs.").clickEvent(ClickEvent.runCommand("/lagg kill all"))), null, LocalePath.COMMAND_KILL_HELP);
 		save = check(locale, toText("&eKilled monsters&f: &b" + Placeholders.SIZE + "&e."), null, LocalePath.COMMAND_KILL_MONSTERS);
 		save = check(locale, toText("&eKilled mobs&f: &b" + Placeholders.SIZE + "&e."), null, LocalePath.COMMAND_KILL_ALL);
 		save = check(locale, toText("&eKilled ambient mobs&f: &b" + Placeholders.SIZE + "&e."), null, LocalePath.COMMAND_KILL_AMBIENT);
@@ -113,15 +110,7 @@ public class Locales {
 		if(save) save(locale);
 	}
 
-	private Component replace(Component component, Map<String, String> map) {
-		return TextUtils.replace(component, map);
-	}
-
-	private Component replaceComponent(Component component, Map<String, Component> map) {
-		return TextUtils.replaceToComponents(component, map);
-	}
-
-	private AbstractLocaleUtil getAbstractLocaleUtil(Locale locale) {
+	private PluginLocale getAbstractLocaleUtil(Locale locale) {
 		return localeService.getPluginLocales(pluginid).getOrDefault(locale, localeService.getPluginLocales(pluginid).get(org.spongepowered.api.util.locale.Locales.DEFAULT));
 	}
 

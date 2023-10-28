@@ -23,7 +23,7 @@ public class Kill extends PluginCommand {
 
 	@Override
 	public void execute(CommandContext context, Audience src, Locale locale, boolean isPlayer) throws CommandException {
-		Component title = getText(locale, LocalePath.COMMAND_HELP_TITLE);
+		Component title = getComponent(locale, LocalePath.COMMAND_HELP_TITLE);
 		sendPaginationList(src, title, text("=").color(title.color()), 10, getListTexts(locale, LocalePath.COMMAND_KILL_HELP));
 	}
 

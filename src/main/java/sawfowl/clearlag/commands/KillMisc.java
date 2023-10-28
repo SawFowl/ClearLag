@@ -11,13 +11,13 @@ import org.spongepowered.api.entity.EntityCategories;
 import org.spongepowered.api.world.server.ServerWorld;
 
 import net.kyori.adventure.audience.Audience;
+
 import sawfowl.clearlag.ClearLag;
 import sawfowl.clearlag.Permissions;
 import sawfowl.clearlag.configure.config.locale.LocalePath;
 import sawfowl.clearlag.utils.Placeholders;
 import sawfowl.commandpack.api.commands.parameterized.ParameterSettings;
 import sawfowl.commandpack.api.data.command.Settings;
-import sawfowl.localeapi.api.TextUtils;
 
 public class KillMisc extends PluginCommand {
 
@@ -29,8 +29,8 @@ public class KillMisc extends PluginCommand {
 	public void execute(CommandContext context, Audience src, Locale locale, boolean isPlayer) throws CommandException {
 		async(() -> {
 			long size = 0;
-			for(ServerWorld world : Sponge.server().worldManager().worlds()) size += killMobs(world, EntityCategories.MISCELLANEOUS.get());
-			src.sendMessage(getPrefix(locale).append(TextUtils.replace(getText(locale, LocalePath.COMMAND_KILL_MISC), Placeholders.SIZE, text(size))));
+			for(ServerWorld world : Sponge.server().worldManager().worlds()) size += killMobs(world, EntityCategories.MISC.get());
+			src.sendMessage(getPrefix(locale).append(getText(locale, LocalePath.COMMAND_KILL_MISC).replace(Placeholders.SIZE, size).get()));
 		});
 	}
 

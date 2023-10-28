@@ -18,7 +18,6 @@ import sawfowl.clearlag.configure.config.locale.LocalePath;
 import sawfowl.clearlag.utils.Placeholders;
 import sawfowl.commandpack.api.commands.parameterized.ParameterSettings;
 import sawfowl.commandpack.api.data.command.Settings;
-import sawfowl.localeapi.api.TextUtils;
 
 public class KillMonsters extends PluginCommand {
 
@@ -31,7 +30,7 @@ public class KillMonsters extends PluginCommand {
 		async(() -> {
 			long size = 0;
 			for(ServerWorld world : Sponge.server().worldManager().worlds()) size += killMobs(world, EntityCategories.MONSTER.get());
-			src.sendMessage(getPrefix(locale).append(TextUtils.replace(getText(locale, LocalePath.COMMAND_KILL_MONSTERS), Placeholders.SIZE, text(size))));
+			src.sendMessage(getPrefix(locale).append(getText(locale, LocalePath.COMMAND_KILL_MONSTERS).replace(Placeholders.SIZE, size).get()));
 		});
 	}
 

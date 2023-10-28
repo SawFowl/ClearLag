@@ -11,13 +11,13 @@ import org.spongepowered.api.entity.EntityCategories;
 import org.spongepowered.api.world.server.ServerWorld;
 
 import net.kyori.adventure.audience.Audience;
+
 import sawfowl.clearlag.ClearLag;
 import sawfowl.clearlag.Permissions;
 import sawfowl.clearlag.configure.config.locale.LocalePath;
 import sawfowl.clearlag.utils.Placeholders;
 import sawfowl.commandpack.api.commands.parameterized.ParameterSettings;
 import sawfowl.commandpack.api.data.command.Settings;
-import sawfowl.localeapi.api.TextUtils;
 
 public class KillCreature extends PluginCommand {
 
@@ -30,7 +30,7 @@ public class KillCreature extends PluginCommand {
 		async(() -> {
 			long size = 0;
 			for(ServerWorld world : Sponge.server().worldManager().worlds()) size += killMobs(world, EntityCategories.CREATURE.get());
-			src.sendMessage(getPrefix(locale).append(TextUtils.replace(getText(locale, LocalePath.COMMAND_KILL_CREATURE), Placeholders.SIZE, text(size))));
+			src.sendMessage(getPrefix(locale).append(getText(locale, LocalePath.COMMAND_KILL_CREATURE).replace(Placeholders.SIZE, size).get()));
 		});
 	}
 
