@@ -11,13 +11,15 @@ import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityCategory;
 import org.spongepowered.api.entity.EntityTypes;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.world.server.ServerWorld;
 import org.spongepowered.plugin.PluginContainer;
 
 import net.kyori.adventure.text.Component;
 
 import sawfowl.clearlag.ClearLag;
-import sawfowl.clearlag.configure.config.locale.LocalePath;
+import sawfowl.clearlag.configure.locale.config.Commands;
+import sawfowl.clearlag.configure.locale.config.Messages;
 import sawfowl.commandpack.api.commands.parameterized.ParameterSettings;
 import sawfowl.commandpack.api.commands.parameterized.ParameterizedCommand;
 
@@ -71,8 +73,28 @@ public abstract class PluginCommand implements ParameterizedCommand {
 		return size;
 	}
 
-	protected Component getPrefix(Locale locale) {
-		return getComponent(locale, LocalePath.PREFIX);
+	public Commands getCommands(Locale locale) {
+		return plugin.getLocales().getLocale(locale).getCommands();
+	}
+
+	public Commands getCommands(ServerPlayer player) {
+		return getCommands(player.locale());
+	}
+
+	public Messages getMessages(Locale locale) {
+		return plugin.getLocales().getLocale(locale).getMessages();
+	}
+
+	public Messages getMessages(ServerPlayer player) {
+		return getMessages(player.locale());
+	}
+
+	public Component getPrefix(Locale locale) {
+		 return getMessages(locale).getPrefix();
+	}
+
+	public Component getPrefix(ServerPlayer player) {
+		 return getMessages(player).getPrefix();
 	}
 
 }

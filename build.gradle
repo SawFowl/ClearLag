@@ -8,7 +8,7 @@ group = "sawfowl.clearlag"
 version = "${major}.${minor}-${api}-${suffix}"
 
 java {
-	sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
+	sourceCompatibility = targetCompatibility = JavaVersion.VERSION_21
 }
 
 repositories {
@@ -28,13 +28,13 @@ tasks.withType(JavaCompile) {
 }
 
 dependencies {
-	implementation "org.spongepowered:spongeapi:11.0.0-SNAPSHOT"
-	implementation "com.github.SawFowl:LocaleAPI:3.0"
-	implementation 'com.github.SawFowl:CommandPack:2.0'
+	implementation "org.spongepowered:spongeapi:${api}"
+	implementation "com.github.SawFowl:LocaleAPI:${localeapi}"
+	implementation "com.github.SawFowl:CommandPack:${commandpack}"
 }
 
 sponge {
-	apiVersion("11.0.0-SNAPSHOT")
+	apiVersion("${api}")
 	loader {
 		name("java_plain")
 		version("1.0")
@@ -51,17 +51,17 @@ sponge {
 		dependency("spongeapi") {
 			optional(false)
 			loadOrder("after")
-			version("11.0.0")
+			version("${api}")
 		}
 		dependency("localeapi") {
 			optional(false)
 			loadOrder("after")
-			version("3.0.0")
+			version("${localeapi}")
 		}
 		dependency("commandpack") {
 			optional(false)
 			loadOrder("after")
-			version("2.0.0")
+			version("${commandpack}")
 		}
 	}
 }

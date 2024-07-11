@@ -14,9 +14,6 @@ import sawfowl.clearlag.configure.config.sections.Performance;
 public class Config {
 
 	public Config(){}
-
-	@Setting("JsonLocales")
-	private boolean jsonLocales = true;
 	@Setting("AutoClear")
 	private AutoClear autoClear = new AutoClear();
 	@Setting("EntityBlacklist")
@@ -26,10 +23,6 @@ public class Config {
 	@Setting("CollisionLimit")
 	@Comment("Entities collision limit after which they will start taking choking damage.\nDoes not apply to players.\nA value less than 2 will disable this functionality.")
 	private int collisionLimit = 20;
-
-	public boolean isJsonLocales() {
-		return jsonLocales;
-	}
 
 	public AutoClear getAutoClear() {
 		return autoClear;

@@ -16,8 +16,6 @@ import net.kyori.adventure.audience.Audience;
 
 import sawfowl.clearlag.ClearLag;
 import sawfowl.clearlag.Permissions;
-import sawfowl.clearlag.configure.config.locale.LocalePath;
-import sawfowl.clearlag.utils.Placeholders;
 import sawfowl.commandpack.api.commands.parameterized.ParameterSettings;
 import sawfowl.commandpack.api.data.command.Settings;
 
@@ -32,13 +30,10 @@ public class Halt extends PluginCommand {
 	public void execute(CommandContext context, Audience src, Locale locale, boolean isPlayer) throws CommandException {
 		ServerWorld world = getArgument(context, value).get();
 		boolean halt = plugin.getConfig().getPerformance().halt(world);
-		if(halt) {
-			world.properties().setGameRule(GameRules.RANDOM_TICK_SPEED.get(), 0);
-		} else world.properties().setGameRule(GameRules.RANDOM_TICK_SPEED.get(), 3);
+		world.properties().setGameRule(GameRules.RANDOM_TICK_SPEED.get(), halt ? 0 : 3);
 		world.properties().setGameRule(GameRules.DO_MOB_SPAWNING.get(), !halt);
 		world.properties().setGameRule(GameRules.DO_FIRE_TICK.get(), !halt);
-		world.properties().setGameRule(GameRules.MOB_GRIEFING.get(), !halt);
-		src.sendMessage(getPrefix(locale).append(getText(locale, halt ? LocalePath.COMMAND_HALT_ENABLE : LocalePath.COMMAND_HALT_DISABLE).replace(Placeholders.WORLD, world.key().asString()).get()));
+		src.sendMessage(getPrefix(locale).append(getCommands(locale).getHalt().getMessage(world, halt)));
 		plugin.saveConfig();
 	}
 
@@ -65,7 +60,7 @@ public class Halt extends PluginCommand {
 	@Override
 	public List<ParameterSettings> getArgs() {
 		value = Parameter.world().key("World").build();
-		return Arrays.asList(ParameterSettings.of(value, false, new Object[] {}));
+		return Arrays.asList(ParameterSettings.of(value, false, null));
 	}
 
 }
