@@ -2,6 +2,7 @@ package sawfowl.clearlag.configure.locale.config;
 
 import org.spongepowered.api.world.server.ServerWorld;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import net.kyori.adventure.text.Component;
 
@@ -13,16 +14,22 @@ import sawfowl.localeapi.api.TextUtils;
 @ConfigSerializable
 public class Messages implements LocaleReference {
 
+	@Setting("Prefix")
 	private Component prefix = deserialize("&7[&bClear&cLag&7] ");
 
+	@Setting("RemoveItems")
 	private Component removeItems = deserialize("&eItems removed&f: &b" + Placeholders.SIZE + "&e.");
 
-	private Component changeTickSpeed = deserialize("Changed the tick rate in the world - \"" + Placeholders.WORLD + "\" from " + Placeholders.FROM + " to " + Placeholders.TO + ".");
+	@Setting("ChangeTickSpeed")
+	private Component changeTickSpeed = deserialize("&eChanged the tick rate in the world - &b\"" + Placeholders.WORLD + "\"&e from &b" + Placeholders.FROM + "&e to &b" + Placeholders.TO + "&e.");
 
-	private Component changeViewingRadius = deserialize("Changed the range of visibility in the world - \"" + Placeholders.WORLD + "\" from " + Placeholders.FROM + " to " + Placeholders.TO + ".");
+	@Setting("ChangeViewingRadius")
+	private Component changeViewingRadius = deserialize("&eChanged the range of visibility in the world - &b\"" + Placeholders.WORLD + "\"&e from &b" + Placeholders.FROM + "&e to &b" + Placeholders.TO + "&e.");
 
+	@Setting("ClearWarn10s")
 	private Component clearWarn10s = deserialize("&eItems lying on the ground will be removed after &c10&e seconds!");
 
+	@Setting("ClearWarn30s")
 	private Component clearWarn30s = deserialize("&eItems lying on the ground will be removed after &a30&e seconds!");
 	public Messages() {}
 
@@ -65,8 +72,8 @@ public class Messages implements LocaleReference {
 	public static Messages createRu() {
 		Messages ru = new Messages();
 		ru.removeItems = ru.deserialize("&eУдалено предметов&f: &b" + Placeholders.SIZE + "&e.");
-		ru.changeTickSpeed = ru.deserialize("Изменена скорость тиков в мире \"" + Placeholders.WORLD + "\" c " + Placeholders.FROM + " на " + Placeholders.TO + ".");
-		ru.changeViewingRadius = ru.deserialize("Изменена дальность видимости в мире \"" + Placeholders.WORLD + "\" c " + Placeholders.FROM + " на " + Placeholders.TO + ".");
+		ru.changeTickSpeed = ru.deserialize("&eИзменена скорость тиков в мире &b\"" + Placeholders.WORLD + "\"&e c &b" + Placeholders.FROM + "&e на &b" + Placeholders.TO + "&e.");
+		ru.changeViewingRadius = ru.deserialize("&eИзменена дальность видимости в мире &b\"" + Placeholders.WORLD + "\"&e c &b" + Placeholders.FROM + "&e на &b" + Placeholders.TO + "&e.");
 		ru.clearWarn10s = ru.deserialize("&eПредметы лежащие на земле будут удалены через &c10&e секунд!");
 		ru.clearWarn30s = ru.deserialize("&eПредметы лежащие на земле будут удалены через &a30&e секунд!");
 		return ru;
