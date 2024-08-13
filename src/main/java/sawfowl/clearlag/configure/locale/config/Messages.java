@@ -31,6 +31,9 @@ public class Messages implements LocaleReference {
 
 	@Setting("ClearWarn30s")
 	private Component clearWarn30s = deserialize("&eItems lying on the ground will be removed after &a30&e seconds!");
+
+	@Setting("Freeze")
+	private Component freeze = deserialize("&4Heavy overload! Tiсks in the world &b\"" + Placeholders.WORLD + "\"&4 temporarily stopped! &eTicks will be enabled on one of the following work load tests.");
 	public Messages() {}
 
 	public Component getPrefix() {
@@ -69,6 +72,10 @@ public class Messages implements LocaleReference {
 		return prefix.append(clearWarn30s);
 	}
 
+	public Component getFreeze(ServerWorld world) {
+		return prefix.append(Text.of(freeze).replace(Placeholders.WORLD, world.key().asString()).get());
+	}
+
 	public static Messages createRu() {
 		Messages ru = new Messages();
 		ru.removeItems = ru.deserialize("&eУдалено предметов&f: &b" + Placeholders.SIZE + "&e.");
@@ -76,6 +83,7 @@ public class Messages implements LocaleReference {
 		ru.changeViewingRadius = ru.deserialize("&eИзменена дальность видимости в мире &b\"" + Placeholders.WORLD + "\"&e c &b" + Placeholders.FROM + "&e на &b" + Placeholders.TO + "&e.");
 		ru.clearWarn10s = ru.deserialize("&eПредметы лежащие на земле будут удалены через &c10&e секунд!");
 		ru.clearWarn30s = ru.deserialize("&eПредметы лежащие на земле будут удалены через &a30&e секунд!");
+		ru.freeze = ru.deserialize("&4Сильная перегрузка! Тики в мире &b\"" + Placeholders.WORLD + "\"&4 временно остановленны! &eТики будут включены при одной из следующих проверок нагрузки.");
 		return ru;
 	}
 

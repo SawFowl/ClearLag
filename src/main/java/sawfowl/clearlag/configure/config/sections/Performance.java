@@ -30,11 +30,15 @@ public class Performance {
 		return viewingRadius;
 	}
 
+	public boolean isHalted(ServerWorld world) {
+		return haltedWorlds.contains(world.key().asString());
+	}
+
 	public boolean halt(ServerWorld world) {
-		if(haltedWorlds.contains(world.key().asString())) {
+		if(isHalted(world)) {
 			haltedWorlds.remove(world.key().asString());
 		} else haltedWorlds.add(world.key().asString());
-		return haltedWorlds.contains(world.key().asString());
+		return isHalted(world);
 	}
 
 }

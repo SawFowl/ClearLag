@@ -9,7 +9,6 @@ import org.spongepowered.api.command.exception.CommandException;
 import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.Parameter;
 import org.spongepowered.api.command.parameter.Parameter.Value;
-import org.spongepowered.api.world.gamerule.GameRules;
 import org.spongepowered.api.world.server.ServerWorld;
 
 import net.kyori.adventure.audience.Audience;
@@ -18,6 +17,7 @@ import sawfowl.clearlag.ClearLag;
 import sawfowl.clearlag.Permissions;
 import sawfowl.commandpack.api.commands.parameterized.ParameterSettings;
 import sawfowl.commandpack.api.data.command.Settings;
+import sawfowl.commandpack.api.mixin.game.MixinServerWorld;
 
 public class Halt extends PluginCommand {
 
@@ -28,11 +28,9 @@ public class Halt extends PluginCommand {
 
 	@Override
 	public void execute(CommandContext context, Audience src, Locale locale, boolean isPlayer) throws CommandException {
-		ServerWorld world = getArgument(context, value).get();
+		MixinServerWorld world = MixinServerWorld.cast(getArgument(context, value).get());
 		boolean halt = plugin.getConfig().getPerformance().halt(world);
-		world.properties().setGameRule(GameRules.RANDOM_TICK_SPEED.get(), halt ? 0 : 3);
-		world.properties().setGameRule(GameRules.DO_MOB_SPAWNING.get(), !halt);
-		world.properties().setGameRule(GameRules.DO_FIRE_TICK.get(), !halt);
+		world.setFreezeTicks(halt);
 		src.sendMessage(getPrefix(locale).append(getCommands(locale).getHalt().getMessage(world, halt)));
 		plugin.saveConfig();
 	}

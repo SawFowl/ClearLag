@@ -17,6 +17,8 @@ public class TicksSection {
 	private double beforeDecrease;
 	@Setting("BeforeIncrease")
 	private double beforeIncrease;
+	@Setting("BeforeFreeze")
+	private double beforeFreeze = 70;
 
 	public double getBeforeDecrease() {
 		return beforeDecrease;
@@ -24,6 +26,10 @@ public class TicksSection {
 
 	public double getBeforeIncrease() {
 		return beforeIncrease;
+	}
+
+	public double getBeforeFreeze() {
+		return beforeFreeze;
 	}
 
 }

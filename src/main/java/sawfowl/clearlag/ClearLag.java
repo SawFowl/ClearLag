@@ -45,7 +45,7 @@ import sawfowl.clearlag.configure.config.Config;
 import sawfowl.clearlag.configure.locale.Locales;
 import sawfowl.clearlag.listeners.CollisionsListener;
 import sawfowl.clearlag.utils.Logger;
-import sawfowl.commandpack.api.CommandPack;
+import sawfowl.commandpack.api.mixin.game.MixinServerWorld;
 import sawfowl.localeapi.api.event.LocaleServiseEvent;
 import sawfowl.localeapi.api.serializetools.SerializeOptions;
 
@@ -64,7 +64,6 @@ public class ClearLag {
 	private Logger logger;
 	private Locales locales;
 	private CollisionsListener collisionsListener;
-	private CommandPack commandPack;
 	private DamageSource damageSource;
 
 	@Inject
@@ -80,11 +79,6 @@ public class ClearLag {
 		loadConfig();
 		locales = new Locales(event.getLocaleService());
 		nextClearItems = Instant.now().getEpochSecond() + getConfig().getAutoClear().getClearInterval();
-	}
-
-	@Listener
-	public void onLoadCommandPackAPI(CommandPack.PostAPI event) {
-		commandPack = event.getAPI();
 	}
 
 	@Listener(order = Order.LAST)
@@ -211,9 +205,9 @@ public class ClearLag {
 	}
 
 	private void workWorld(ServerWorld world) {
-		double tickTime = commandPack.getTPS().getWorldTickTime(world);
+		double tickTime = MixinServerWorld.cast(world).getTickTime();
 		if(getConfig().getPerformance().getViewingRadius().isEnable() && !getConfig().getPerformance().getViewingRadius().isBlackList(world)) changeViewingRadius(world, tickTime, world.properties().viewDistance());
-		if(getConfig().getPerformance().getTickSpeed().isEnable() && !getConfig().getPerformance().getTickSpeed().isBlackList(world)) changeTickSpeed(world, tickTime, world.properties().gameRule(GameRules.RANDOM_TICK_SPEED.get()));
+		if(getConfig().getPerformance().getTickSpeed().isEnable() && !getConfig().getPerformance().getTickSpeed().isBlackList(world)) changeTickSpeed(MixinServerWorld.cast(world), tickTime, world.properties().gameRule(GameRules.RANDOM_TICK_SPEED.get()));
 	}
 
 	private void changeViewingRadius(ServerWorld world, double tickTime, int view) {
@@ -227,14 +221,20 @@ public class ClearLag {
 		}
 	}
 
-	private void changeTickSpeed(ServerWorld world, double tickTime, int speed) {
+	private void changeTickSpeed(MixinServerWorld world, double tickTime, int speed) {
 		if(tickTime < getConfig().getPerformance().getTickSpeed().getTicks().getBeforeIncrease() && speed <= getConfig().getPerformance().getTickSpeed().getMax(world)) {
-			if(speed == getConfig().getPerformance().getTickSpeed().getMax(world)) return;
-			sync(() -> world.properties().setGameRule(GameRules.RANDOM_TICK_SPEED.get(), speed + 1));
+			if(speed == getConfig().getPerformance().getTickSpeed().getMax(world) || getConfig().getPerformance().isHalted(world)) return;
+			sync(() -> {
+				world.properties().setGameRule(GameRules.RANDOM_TICK_SPEED.get(), speed + 1);
+				if(world.isFreezeTicks()) world.setFreezeTicks(false);
+			});
 			if(getConfig().getPerformance().getTickSpeed().isDebug()) logger.info(locales.getSystemLocale().getMessages().getChangeTickSpeedLog(world, speed, speed + 1));
 		} else if(tickTime > getConfig().getPerformance().getTickSpeed().getTicks().getBeforeIncrease() && speed > 0) {
-			sync(() -> world.properties().setGameRule(GameRules.RANDOM_TICK_SPEED.get(), speed- 1));
+			sync(() -> world.properties().setGameRule(GameRules.RANDOM_TICK_SPEED.get(), speed - 1));
 			if(getConfig().getPerformance().getTickSpeed().isDebug()) logger.warn(locales.getSystemLocale().getMessages().getChangeTickSpeedLog(world, speed, speed - 1));
+		} else if(tickTime  > getConfig().getPerformance().getTickSpeed().getTicks().getBeforeFreeze() && speed <= 1) {
+			sync(() -> world.setFreezeTicks(true));
+			logger.warn(locales.getSystemLocale().getMessages().getFreeze(world));
 		}
 	}
 

@@ -37,7 +37,7 @@ public class MainCommand extends PluginCommand {
 		return builder()
 				.addChild(new Clear(plugin).build(), "clear")
 				.addChild(new GarbageCollector(plugin).build(), "garbagecollector", "gc")
-				.addChild(new Halt(plugin).build(), "halt")
+				.addChild(new Halt(plugin).build(), "halt", "freeze")
 				.addChild(new Kill(plugin).build(), "kill")
 				.build();
 	}
