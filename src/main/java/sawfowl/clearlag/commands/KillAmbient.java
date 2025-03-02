@@ -25,11 +25,10 @@ public class KillAmbient extends PluginCommand {
 
 	@Override
 	public void execute(CommandContext context, Audience src, Locale locale, boolean isPlayer) throws CommandException {
-		async(() -> {
-			long size = 0;
-			for(ServerWorld world : Sponge.server().worldManager().worlds()) size += killMobs(world, EntityCategories.AMBIENT.get());
-			src.sendMessage(getPrefix(locale).append(getCommands(locale).getKill().getAmbient(size)));
-		});
+		long size = 0;
+		for(ServerWorld world : Sponge.server().worldManager().worlds()) size += killMobs(world, EntityCategories.AMBIENT.get());
+		src.sendMessage(getPrefix(locale).append(getCommands(locale).getKill().getAmbient(size)));
+	
 	}
 
 	@Override

@@ -148,7 +148,7 @@ public class ClearLag {
 			if(getConfig().getAutoClear().isDebug()) logger.info(locales.getSystemLocale().getMessages().getRemoveItemsLog(removed));
 			for(ServerPlayer player : Sponge.server().onlinePlayers()) player.sendMessage(locales.getLocale(player).getMessages().getRemoveItems(removed));
 		}).build());
-		if(getConfig().getAutoClear().getLimitMonsters() > 0) taskMonsters = Sponge.asyncScheduler().submit(Task.builder().plugin(container).interval(getConfig().getAutoClear().getClearInterval(), TimeUnit.SECONDS).execute(() -> {
+		if(getConfig().getAutoClear().getLimitMonsters() > 0) taskMonsters = Sponge.server().scheduler().submit(Task.builder().plugin(container).interval(getConfig().getAutoClear().getClearInterval(), TimeUnit.SECONDS).execute(() -> {
 			Sponge.server().worldManager().worlds().forEach(this::killMonsters);
 		}).build());
 		if(getConfig().getPerformance().getViewingRadius().isEnable() && getConfig().getPerformance().getTickSpeed().isEnable()) for(ServerWorld world : Sponge.server().worldManager().worlds()) {

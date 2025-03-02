@@ -25,11 +25,9 @@ public class KillMisc extends PluginCommand {
 
 	@Override
 	public void execute(CommandContext context, Audience src, Locale locale, boolean isPlayer) throws CommandException {
-		async(() -> {
-			long size = 0;
-			for(ServerWorld world : Sponge.server().worldManager().worlds()) size += killMobs(world, EntityCategories.MISC.get());
-			src.sendMessage(getPrefix(locale).append(getCommands(locale).getKill().getMisc(size)));
-		});
+		long size = 0;
+		for(ServerWorld world : Sponge.server().worldManager().worlds()) size += killMobs(world, EntityCategories.MISC.get());
+		src.sendMessage(getPrefix(locale).append(getCommands(locale).getKill().getMisc(size)));
 	}
 
 	@Override
