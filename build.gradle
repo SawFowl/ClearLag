@@ -17,10 +17,10 @@ repositories {
 		name = "Sponge"
 		url = "https://repo.spongepowered.org/repository/maven-public"
 	}
-	maven {
-		name = "JitPack"
-		url 'https://jitpack.io'
-	}
+	//maven {
+	//	name = "JitPack"
+	//	url 'https://jitpack.io'
+	//}
 }
 
 tasks.withType(JavaCompile) {
@@ -29,8 +29,9 @@ tasks.withType(JavaCompile) {
 
 dependencies {
 	implementation "org.spongepowered:spongeapi:${api}"
-	implementation "com.github.SawFowl:LocaleAPI:${localeapi}"
-	implementation "com.github.SawFowl:CommandPack:${commandpack}"
+	//implementation "com.github.SawFowl:LocaleAPI:${localeapi}"
+	//implementation "com.github.SawFowl:CommandPack:${commandpack}"
+	implementation fileTree(dir: 'libs', include: '*.jar')
 }
 
 sponge {
