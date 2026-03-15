@@ -5,10 +5,10 @@ import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import sawfowl.clearlag.configure.locale.config.Commands;
 import sawfowl.clearlag.configure.locale.config.Messages;
-import sawfowl.localeapi.api.LocaleReference;
+import sawfowl.localeapi.api.Translation;
 
 @ConfigSerializable
-public class LocaleConfig implements LocaleReference {
+public class LocaleConfig implements Translation {
 
 	@Setting("Messages")
 	private Messages messages = new Messages();

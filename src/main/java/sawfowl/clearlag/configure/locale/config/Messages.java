@@ -7,12 +7,12 @@ import org.spongepowered.configurate.objectmapping.meta.Setting;
 import net.kyori.adventure.text.Component;
 
 import sawfowl.clearlag.utils.Placeholders;
-import sawfowl.localeapi.api.LocaleReference;
 import sawfowl.localeapi.api.Text;
 import sawfowl.localeapi.api.TextUtils;
+import sawfowl.localeapi.api.Translation;
 
 @ConfigSerializable
-public class Messages implements LocaleReference {
+public class Messages implements Translation {
 
 	@Setting("Prefix")
 	private Component prefix = deserialize("&7[&bClear&cLag&7] ");

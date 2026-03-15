@@ -74,7 +74,7 @@ public abstract class PluginCommand implements ParameterizedCommand {
 	}
 
 	public Commands getCommands(Locale locale) {
-		return plugin.getLocales().getLocale(locale).getCommands();
+		return plugin.getLocales().getAsReferenced(locale).getCommands();
 	}
 
 	public Commands getCommands(ServerPlayer player) {
@@ -82,7 +82,7 @@ public abstract class PluginCommand implements ParameterizedCommand {
 	}
 
 	public Messages getMessages(Locale locale) {
-		return plugin.getLocales().getLocale(locale).getMessages();
+		return plugin.getLocales().getAsReferenced(locale).getMessages();
 	}
 
 	public Messages getMessages(ServerPlayer player) {

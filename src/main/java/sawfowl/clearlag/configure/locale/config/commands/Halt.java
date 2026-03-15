@@ -7,10 +7,10 @@ import org.spongepowered.configurate.objectmapping.meta.Setting;
 import net.kyori.adventure.text.Component;
 
 import sawfowl.clearlag.utils.Placeholders;
-import sawfowl.localeapi.api.LocaleReference;
+import sawfowl.localeapi.api.Translation;
 
 @ConfigSerializable
-public class Halt implements LocaleReference {
+public class Halt implements Translation {
 
 	@Setting("Enable")
 	private Component enable = deserialize("&eEnabled halt function in the world&f: &b" + Placeholders.WORLD + "&e.");

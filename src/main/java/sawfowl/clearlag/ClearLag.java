@@ -1,5 +1,6 @@
 package sawfowl.clearlag;
 
+import java.lang.invoke.MethodHandles;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.HashMap;
@@ -28,13 +29,9 @@ import org.spongepowered.api.event.lifecycle.StartedEngineEvent;
 import org.spongepowered.api.event.lifecycle.StoppedGameEvent;
 import org.spongepowered.api.scheduler.ScheduledTask;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.util.locale.Locales;
 import org.spongepowered.api.world.gamerule.GameRules;
 import org.spongepowered.api.world.server.ServerWorld;
-import org.spongepowered.configurate.CommentedConfigurationNode;
-import org.spongepowered.configurate.ConfigurateException;
-import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
-import org.spongepowered.configurate.reference.ConfigurationReference;
-import org.spongepowered.configurate.reference.ValueReference;
 import org.spongepowered.plugin.PluginContainer;
 import org.spongepowered.plugin.builtin.jvm.Plugin;
 
@@ -42,12 +39,15 @@ import com.google.inject.Inject;
 
 import sawfowl.clearlag.commands.MainCommand;
 import sawfowl.clearlag.configure.config.Config;
-import sawfowl.clearlag.configure.locale.Locales;
+import sawfowl.clearlag.configure.locale.LocaleConfig;
 import sawfowl.clearlag.listeners.CollisionsListener;
 import sawfowl.clearlag.utils.Logger;
 import sawfowl.commandpack.api.mixin.game.MixinServerWorld;
-import sawfowl.localeapi.api.event.LocaleServiseEvent;
-import sawfowl.localeapi.api.serializetools.SerializeOptions;
+import sawfowl.localeapi.api.ConfigTypes;
+import sawfowl.localeapi.api.LocaleService;
+import sawfowl.localeapi.api.LocalesList;
+import sawfowl.localeapi.api.config.ReferencedConfig;
+import sawfowl.localeapi.api.serializetools.ItemStackSerializerType;
 
 @Plugin("clearlag")
 public class ClearLag {
@@ -55,16 +55,15 @@ public class ClearLag {
 	private Path configDir;
 	private PluginContainer container;
 	private static ClearLag instance;
-	private ConfigurationReference<CommentedConfigurationNode> configurationReference;
-	private ValueReference<Config, CommentedConfigurationNode> config;
+	private ReferencedConfig<Config> config;
 	private long nextClearItems;
 	private ScheduledTask taskClear;
 	private ScheduledTask taskMonsters;
 	private Map<ResourceKey, ScheduledTask> worldsTasks = new HashMap<ResourceKey, ScheduledTask>();
 	private Logger logger;
-	private Locales locales;
 	private CollisionsListener collisionsListener;
 	private DamageSource damageSource;
+	private LocalesList<LocaleConfig> locales;
 
 	@Inject
 	public ClearLag(PluginContainer container, @ConfigDir(sharedRoot = false) Path configDirectory) {
@@ -72,12 +71,10 @@ public class ClearLag {
 		this.container = container;
 		configDir = configDirectory;
 		logger = new Logger();
-	}
-
-	@Listener
-	public void onLoadLocaleServise(LocaleServiseEvent.Construct event) {
-		loadConfig();
-		locales = new Locales(event.getLocaleService());
+		locales = LocaleService.getInstance().createLocales(container, LocaleConfig.class);
+		if(!locales.contains(Locales.DEFAULT)) locales.createReferencedTranslation(ConfigTypes.HOCON, Locales.DEFAULT, LocaleConfig.class);
+		if(!locales.contains(Locales.RU_RU)) locales.createReferencedTranslation(ConfigTypes.HOCON, Locales.RU_RU, LocaleConfig.createRu());
+		config = ReferencedConfig.create(container, configDir, "Config", ConfigTypes.HOCON, ItemStackSerializerType.SIMPLE, null, Config.class);
 		nextClearItems = Instant.now().getEpochSecond() + getConfig().getAutoClear().getClearInterval();
 	}
 
@@ -114,7 +111,7 @@ public class ClearLag {
 		return config.get();
 	}
 
-	public Locales getLocales() {
+	public LocalesList<LocaleConfig> getLocales() {
 		return locales;
 	}
 
@@ -123,7 +120,7 @@ public class ClearLag {
 	}
 
 	public void reload() {
-		loadConfig();
+		config.load();
 		load();
 	}
 
@@ -133,11 +130,11 @@ public class ClearLag {
 			long current = Instant.now().getEpochSecond();
 			switch ((int) (nextClearItems - current)) {
 				case 10: {
-					Sponge.server().onlinePlayers().forEach(player -> player.sendMessage(locales.getLocale(player).getMessages().getClearWarn10s()));
+					Sponge.server().onlinePlayers().forEach(player -> player.sendMessage(locales.getAsReferenced(player).getMessages().getClearWarn10s()));
 					break;
 				}
 				case 30: {
-					Sponge.server().onlinePlayers().forEach(player -> player.sendMessage(locales.getLocale(player).getMessages().getClearWarn30s()));
+					Sponge.server().onlinePlayers().forEach(player -> player.sendMessage(locales.getAsReferenced(player).getMessages().getClearWarn30s()));
 					break;
 				}
 				default: break;
@@ -145,8 +142,8 @@ public class ClearLag {
 			if(current < nextClearItems) return;
 			nextClearItems = current + getConfig().getAutoClear().getClearInterval();
 			long removed = removeItems();
-			if(getConfig().getAutoClear().isDebug()) logger.info(locales.getSystemLocale().getMessages().getRemoveItemsLog(removed));
-			for(ServerPlayer player : Sponge.server().onlinePlayers()) player.sendMessage(locales.getLocale(player).getMessages().getRemoveItems(removed));
+			if(getConfig().getAutoClear().isDebug()) logger.info(locales.getSystemAsReferenced().getMessages().getRemoveItemsLog(removed));
+			for(ServerPlayer player : Sponge.server().onlinePlayers()) player.sendMessage(locales.getAsReferenced(player).getMessages().getRemoveItems(removed));
 		}).build());
 		if(getConfig().getAutoClear().getLimitMonsters() > 0) taskMonsters = Sponge.server().scheduler().submit(Task.builder().plugin(container).interval(getConfig().getAutoClear().getClearInterval(), TimeUnit.SECONDS).execute(() -> {
 			Sponge.server().worldManager().worlds().forEach(this::killMonsters);
@@ -157,7 +154,7 @@ public class ClearLag {
 		if(getConfig().getCollisionLimit() < 2) {
 			if(collisionsListener != null) Sponge.eventManager().unregisterListeners(collisionsListener);
 			collisionsListener = null;
-		} else if(collisionsListener == null) Sponge.eventManager().registerListeners(container, collisionsListener = new CollisionsListener(instance));
+		} else if(collisionsListener == null) Sponge.eventManager().registerListeners(container, collisionsListener = new CollisionsListener(instance), MethodHandles.lookup());
 	}
 
 	public long removeItems() {
@@ -186,7 +183,7 @@ public class ClearLag {
 	}
 
 	public void saveConfig() {
-		config.setAndSave(getConfig());
+		config.save();
 	}
 
 	private void stopTasks() {
@@ -214,10 +211,10 @@ public class ClearLag {
 		if(tickTime < getConfig().getPerformance().getViewingRadius().getTicks().getBeforeDecrease() && view <= getConfig().getPerformance().getViewingRadius().getMax(world)) {
 			if(view == getConfig().getPerformance().getViewingRadius().getMax(world)) return;
 			sync(() -> world.properties().setViewDistance(view + 1));
-			if(getConfig().getPerformance().getViewingRadius().isDebug()) logger.info(locales.getSystemLocale().getMessages().getChangeViewingRadiusLog(world, view, view + 1));
+			if(getConfig().getPerformance().getViewingRadius().isDebug()) logger.info(locales.getSystemAsReferenced().getMessages().getChangeViewingRadiusLog(world, view, view + 1));
 		} else if(tickTime > getConfig().getPerformance().getViewingRadius().getTicks().getBeforeIncrease() && view > 1) {
 			sync(() -> world.properties().setViewDistance(view - 1));
-			if(getConfig().getPerformance().getViewingRadius().isDebug()) logger.warn(locales.getSystemLocale().getMessages().getChangeViewingRadiusLog(world, view, view - 1));
+			if(getConfig().getPerformance().getViewingRadius().isDebug()) logger.warn(locales.getSystemAsReferenced().getMessages().getChangeViewingRadiusLog(world, view, view - 1));
 		}
 	}
 
@@ -228,28 +225,18 @@ public class ClearLag {
 				world.properties().setGameRule(GameRules.RANDOM_TICK_SPEED.get(), speed + 1);
 				if(world.isFreezeTicks()) world.setFreezeTicks(false);
 			});
-			if(getConfig().getPerformance().getTickSpeed().isDebug()) logger.info(locales.getSystemLocale().getMessages().getChangeTickSpeedLog(world, speed, speed + 1));
+			if(getConfig().getPerformance().getTickSpeed().isDebug()) logger.info(locales.getSystemAsReferenced().getMessages().getChangeTickSpeedLog(world, speed, speed + 1));
 		} else if(tickTime > getConfig().getPerformance().getTickSpeed().getTicks().getBeforeIncrease() && speed > 0) {
 			sync(() -> world.properties().setGameRule(GameRules.RANDOM_TICK_SPEED.get(), speed - 1));
-			if(getConfig().getPerformance().getTickSpeed().isDebug()) logger.warn(locales.getSystemLocale().getMessages().getChangeTickSpeedLog(world, speed, speed - 1));
+			if(getConfig().getPerformance().getTickSpeed().isDebug()) logger.warn(locales.getSystemAsReferenced().getMessages().getChangeTickSpeedLog(world, speed, speed - 1));
 		} else if(tickTime  > getConfig().getPerformance().getTickSpeed().getTicks().getBeforeFreeze() && speed <= 1) {
 			sync(() -> world.setFreezeTicks(true));
-			logger.warn(locales.getSystemLocale().getMessages().getFreeze(world));
+			logger.warn(locales.getSystemAsReferenced().getMessages().getFreeze(world));
 		}
 	}
 
 	private void sync(Runnable runnable) {
 		Sponge.server().scheduler().executor(container).execute(runnable);
-	}
-
-	private void loadConfig() {
-		try {
-			configurationReference = HoconConfigurationLoader.builder().defaultOptions(SerializeOptions.OPTIONS_VARIANT_1).path(configDir.resolve("Config.conf")).build().loadToReference();
-			config = configurationReference.referenceTo(Config.class);
-			configurationReference.save();
-		} catch (ConfigurateException e) {
-			e.printStackTrace();
-		}
 	}
 
 }

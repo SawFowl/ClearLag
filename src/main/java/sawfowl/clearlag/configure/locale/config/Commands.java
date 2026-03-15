@@ -9,10 +9,10 @@ import sawfowl.clearlag.configure.locale.config.commands.Halt;
 import sawfowl.clearlag.configure.locale.config.commands.Help;
 import sawfowl.clearlag.configure.locale.config.commands.Kill;
 import sawfowl.clearlag.utils.Placeholders;
-import sawfowl.localeapi.api.LocaleReference;
+import sawfowl.localeapi.api.Translation;
 
 @ConfigSerializable
-public class Commands implements LocaleReference {
+public class Commands implements Translation {
 
 	@Setting("Halt")
 	private Halt halt = new Halt();

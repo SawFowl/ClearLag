@@ -10,10 +10,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 
 import sawfowl.clearlag.utils.Placeholders;
-import sawfowl.localeapi.api.LocaleReference;
+import sawfowl.localeapi.api.Translation;
 
 @ConfigSerializable
-public class Kill implements LocaleReference {
+public class Kill implements Translation {
 
 	@Setting("Help")
 	private List<Component> help = Arrays.asList(
