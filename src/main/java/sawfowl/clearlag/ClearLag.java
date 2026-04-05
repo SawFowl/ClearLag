@@ -44,10 +44,10 @@ import sawfowl.clearlag.listeners.CollisionsListener;
 import sawfowl.clearlag.utils.Logger;
 import sawfowl.commandpack.api.mixin.game.MixinServerWorld;
 import sawfowl.localeapi.api.ConfigTypes;
-import sawfowl.localeapi.api.LocaleService;
 import sawfowl.localeapi.api.LocalesList;
 import sawfowl.localeapi.api.config.ReferencedConfig;
-import sawfowl.localeapi.api.serializetools.ItemStackSerializerType;
+import sawfowl.localeapi.api.services.ConfigurationService;
+import sawfowl.localeapi.api.services.LocaleService;
 
 @Plugin("clearlag")
 public class ClearLag {
@@ -74,7 +74,7 @@ public class ClearLag {
 		locales = LocaleService.getInstance().createLocales(container, LocaleConfig.class);
 		if(!locales.contains(Locales.DEFAULT)) locales.createReferencedTranslation(ConfigTypes.HOCON, Locales.DEFAULT, LocaleConfig.class);
 		if(!locales.contains(Locales.RU_RU)) locales.createReferencedTranslation(ConfigTypes.HOCON, Locales.RU_RU, LocaleConfig.createRu());
-		config = ReferencedConfig.create(container, configDir, "Config", ConfigTypes.HOCON, ItemStackSerializerType.SIMPLE, null, Config.class);
+		config = ConfigurationService.getInstance().createReferencedConfig(container, Config.class).setPath(configDir).setName("Config").setType(ConfigTypes.HOCON).build();
 		nextClearItems = Instant.now().getEpochSecond() + getConfig().getAutoClear().getClearInterval();
 	}
 
