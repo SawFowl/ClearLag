@@ -42,7 +42,7 @@ import sawfowl.clearlag.configure.config.Config;
 import sawfowl.clearlag.configure.locale.LocaleConfig;
 import sawfowl.clearlag.listeners.CollisionsListener;
 import sawfowl.clearlag.utils.Logger;
-import sawfowl.commandpack.api.mixin.game.MixinServerWorld;
+import sawfowl.commandpack.api.game.server.CPServerWorld;
 import sawfowl.localeapi.api.ConfigTypes;
 import sawfowl.localeapi.api.LocalesList;
 import sawfowl.localeapi.api.config.ReferencedConfig;
@@ -202,9 +202,9 @@ public class ClearLag {
 	}
 
 	private void workWorld(ServerWorld world) {
-		double tickTime = MixinServerWorld.cast(world).getTickTime();
+		double tickTime = CPServerWorld.cast(world).getTickTime();
 		if(getConfig().getPerformance().getViewingRadius().isEnable() && !getConfig().getPerformance().getViewingRadius().isBlackList(world)) changeViewingRadius(world, tickTime, world.properties().viewDistance());
-		if(getConfig().getPerformance().getTickSpeed().isEnable() && !getConfig().getPerformance().getTickSpeed().isBlackList(world)) changeTickSpeed(MixinServerWorld.cast(world), tickTime, world.properties().gameRule(GameRules.RANDOM_TICK_SPEED.get()));
+		if(getConfig().getPerformance().getTickSpeed().isEnable() && !getConfig().getPerformance().getTickSpeed().isBlackList(world)) changeTickSpeed(CPServerWorld.cast(world), tickTime, world.properties().gameRule(GameRules.RANDOM_TICK_SPEED.get()));
 	}
 
 	private void changeViewingRadius(ServerWorld world, double tickTime, int view) {
@@ -218,7 +218,7 @@ public class ClearLag {
 		}
 	}
 
-	private void changeTickSpeed(MixinServerWorld world, double tickTime, int speed) {
+	private void changeTickSpeed(CPServerWorld world, double tickTime, int speed) {
 		if(tickTime < getConfig().getPerformance().getTickSpeed().getTicks().getBeforeIncrease() && speed <= getConfig().getPerformance().getTickSpeed().getMax(world)) {
 			if(speed == getConfig().getPerformance().getTickSpeed().getMax(world) || getConfig().getPerformance().isHalted(world)) return;
 			sync(() -> {

@@ -17,7 +17,7 @@ import sawfowl.clearlag.ClearLag;
 import sawfowl.clearlag.Permissions;
 import sawfowl.commandpack.api.commands.parameterized.ParameterSettings;
 import sawfowl.commandpack.api.data.command.Settings;
-import sawfowl.commandpack.api.mixin.game.MixinServerWorld;
+import sawfowl.commandpack.api.game.server.CPServerWorld;
 
 public class Halt extends PluginCommand {
 
@@ -28,7 +28,7 @@ public class Halt extends PluginCommand {
 
 	@Override
 	public void execute(CommandContext context, Audience src, Locale locale, boolean isPlayer) throws CommandException {
-		MixinServerWorld world = MixinServerWorld.cast(getArgument(context, value).get());
+		CPServerWorld world = CPServerWorld.cast(getArgument(context, value).get());
 		boolean halt = plugin.getConfig().getPerformance().halt(world);
 		world.setFreezeTicks(halt);
 		src.sendMessage(getPrefix(locale).append(getCommands(locale).getHalt().getMessage(world, halt)));
